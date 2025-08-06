@@ -901,7 +901,7 @@ impl igIGZLoader {
 fn get_chunk_descriptor_start(version: u32) -> u64 {
     match version {
         0x05 | 0x06 => 0xC,
-        0x09 => 0x14,
+        0x08 | 0x09 => 0x14,
         _ => todo!("Unsupported igz version {}", version)
     }
 }
@@ -909,7 +909,7 @@ fn get_chunk_descriptor_start(version: u32) -> u64 {
 fn get_attribute_location(version: u32) -> u32 {
     match version {
         0x05 | 0x06 => 0x56C,
-        0x09 => 0x224,
+        0x08 | 0x09 => 0x224,
         _ => todo!("Unsupported igz version {}", version)
     }
 }
