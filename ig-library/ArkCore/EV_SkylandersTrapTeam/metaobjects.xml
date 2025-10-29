@@ -3649,7 +3649,7 @@
 			<metafield type="igIntMetaField" offset="0x0068" name="_moveIndex" copyMethod="none" persistent="false"/>
 			<metafield type="igObjectRefMetaField" offset="0x006C" name="_attachNode" copyMethod="none" persistent="false" construct="false" destruct="false" reconstruct="false" refCounted="true" metaobject="AbstractAttachNode"/>
 			<metafield type="igObjectRefMetaField" offset="0x0070" name="_attachNodeOwner" copyMethod="none" persistent="false" construct="false" destruct="false" reconstruct="false" refCounted="true" metaobject="AbstractPlacement"/>
-			<metafield type="igObjectRefMetaField" offset="0x0074" name="_attachedObjects" copyMethod="none" persistent="false" construct="false" destruct="false" reconstruct="false" refCounted="true" metaobject="AbstractPlacementList"/>
+			<metafield type="igObjectRefMetaField" offset="0x0074" name="_attachedObjects" copyMethod="none" persistent="false" construct="false" destruct="false" reconstruct="false" refCounted="true" metaobject="SpriteInfoList" dotnettype="igLibrary.Core.IigObjectList"/>
 			<metafield type="tfbEulerTransformMetaField" offset="0x0078" name="_attachXform" copyMethod="none" persistent="false"/>
 			<metafield type="igObjectRefMetaField" offset="0x0090" name="_soundList" copyMethod="none" persistent="false" construct="false" destruct="false" reconstruct="false" refCounted="true" metaobject="SoundList"/>
 			<metafield type="igObjectRefMetaField" offset="0x0094" name="_animationList" copyMethod="none" persistent="false" construct="false" destruct="false" reconstruct="false" refCounted="true" metaobject="AnimationStack"/>
@@ -4919,7 +4919,7 @@
 	</metaobject>
 	<metaobject type="igMetaObject" refname="OpAbstractMove" basetype="OpBranch">
 		<metafields>
-			<metafield type="igObjectRefMetaField" offset="0x0020" name="_LHS" construct="true" destruct="false" reconstruct="true" refCounted="true" metaobject="ScriptGroupStack"/>
+			<metafield type="igObjectRefMetaField" offset="0x0020" name="_LHS" construct="true" destruct="false" reconstruct="true" refCounted="true" metaobject="ScriptObjectList"/>
 			<metafield type="igEnumMetaField" offset="0x0024" name="_dir" metaenum="SetDirection"/>
 			<metafield type="igObjectRefMetaField" offset="0x0028" name="_RHS" construct="true" destruct="false" reconstruct="true" refCounted="true" metaobject="ValueRHSVariant"/>
 			<metafield type="igObjectRefMetaField" offset="0x002C" name="_NP" construct="true" destruct="false" reconstruct="true" refCounted="true" metaobject="ScriptGroupStack"/>
@@ -8067,7 +8067,7 @@
 	</metaobject>
 	<metaobject type="igMetaObject" refname="OpAbstractControl" basetype="OpBranch">
 		<metafields>
-			<metafield type="igObjectRefMetaField" offset="0x0020" name="_LHS" construct="true" destruct="false" reconstruct="true" refCounted="true" metaobject="AbstractPlacementList"/>
+			<metafield type="igObjectRefMetaField" offset="0x0020" name="_LHS" construct="true" destruct="false" reconstruct="true" refCounted="true" metaobject="ScriptObjectList"/>
 			<metafield type="igObjectRefMetaField" offset="0x0024" name="_cachedObject" persistent="false" mutable="true" construct="false" destruct="false" reconstruct="false" refCounted="true" metaobject="tfbScriptObject"/>
 			<metafield type="igObjectRefMetaField" offset="0x001C" name="_lastReceiver" persistent="false" mutable="true" construct="false" destruct="false" reconstruct="false" refCounted="true" metaobject="AbstractPlacement"/>
 		</metafields>
@@ -9878,7 +9878,7 @@
 	<metaobject type="igMetaObject" refname="tfbSpriteInfo" basetype="AbstractPlacement">
 		<overriddenmetafields>
 			<metafield type="igObjectRefMetaField" offset="0x0070" name="_attachNodeOwner" copyMethod="none" construct="false" destruct="false" reconstruct="false" refCounted="true" metaobject="AbstractPlacement"/>
-			<metafield type="igObjectRefMetaField" offset="0x0074" name="_attachedObjects" copyMethod="none" persistent="false" construct="true" destruct="false" reconstruct="true" refCounted="true" metaobject="AbstractPlacementList"/>
+			<metafield type="igObjectRefMetaField" offset="0x0074" name="_attachedObjects" copyMethod="none" persistent="false" construct="true" destruct="false" reconstruct="true" refCounted="true" metaobject="igObjectList" dotnettype="igLibrary.Core.IigObjectList"/>
 		</overriddenmetafields>
 		<metafields>
 			<metafield type="igStaticMetaField" offset="0x0000" name="_interface" persistent="false" implicitAlignment="false" requiredAlignment="0" storageMetaField="f0">
@@ -11353,7 +11353,7 @@
 			<metafield type="igStringMetaField" offset="0x0008" name="_name" isAlikeMethod="none" persistent="false" construct="false" destruct="true" reconstruct="false" refCounted="true" default="teleport to||working|facing"/>
 		</overriddenmetafields>
 		<metafields>
-			<metafield type="igObjectRefMetaField" offset="0x001C" name="_LHS" construct="true" destruct="false" reconstruct="true" refCounted="true" metaobject="ScriptGroupStack"/>
+			<metafield type="igObjectRefMetaField" offset="0x001C" name="_LHS" construct="true" destruct="false" reconstruct="true" refCounted="true" metaobject="ScriptObjectList"/>
 			<metafield type="igEnumMetaField" offset="0x0020" name="_dir" metaenum="SetDirection"/>
 			<metafield type="igObjectRefMetaField" offset="0x0024" name="_facingRHS" construct="true" destruct="false" reconstruct="true" refCounted="true" metaobject="ValueRHSVariant"/>
 		</metafields>
@@ -14871,7 +14871,7 @@
 			<metafield type="igStringMetaField" offset="0x0008" name="_name" isAlikeMethod="none" persistent="false" construct="false" destruct="true" reconstruct="false" refCounted="true" default="for each|in|working|offset by|do|current in [for each]"/>
 		</overriddenmetafields>
 		<metafields>
-			<metafield type="igObjectRefMetaField" offset="0x0020" name="_LHS" construct="true" destruct="false" reconstruct="true" refCounted="true" metaobject="SetStack"/>
+			<metafield type="igObjectRefMetaField" offset="0x0020" name="_LHS" construct="true" destruct="false" reconstruct="true" refCounted="true" metaobject="ScriptObjectList"/>
 			<metafield type="igEnumMetaField" offset="0x0024" name="_dir" metaenum="SetDirection"/>
 			<metafield type="igObjectRefMetaField" offset="0x0028" name="_RHS" construct="true" destruct="false" reconstruct="true" refCounted="true" metaobject="ValueRHSVariant"/>
 			<metafield type="igObjectRefMetaField" offset="0x002C" name="_cachedSet" persistent="false" mutable="true" construct="false" destruct="false" reconstruct="false" refCounted="true" metaobject="ScriptObjectList"/>
@@ -15506,7 +15506,7 @@
 			<metafield type="igStringMetaField" offset="0x0008" name="_name" isAlikeMethod="none" persistent="false" construct="false" destruct="true" reconstruct="false" refCounted="true" default="play||||playing"/>
 		</overriddenmetafields>
 		<metafields>
-			<metafield type="igObjectRefMetaField" offset="0x001C" name="_LHS" construct="true" destruct="false" reconstruct="true" refCounted="true" metaobject="ScriptGroupStack"/>
+			<metafield type="igObjectRefMetaField" offset="0x001C" name="_LHS" construct="true" destruct="false" reconstruct="true" refCounted="true" metaobject="ScriptObjectList"/>
 			<metafield type="igObjectRefMetaField" offset="0x0020" name="_indexRHS" construct="false" destruct="false" reconstruct="false" refCounted="true" metaobject="ValueRHSVariant"/>
 			<metafield type="igObjectRefMetaField" offset="0x0024" name="_cachedObject" persistent="false" mutable="true" construct="false" destruct="false" reconstruct="false" refCounted="true" metaobject="ClonedSequence"/>
 		</metafields>

@@ -113,7 +113,10 @@ impl igStorageDevice for igStdLibStorageDevice {
                 }
             }
             Err(e) => {
-                panic!("Failed to find case insensitive path: {}", e)
+                if !self.get_combined_path(work_item).ends_with("level.bld") {
+                    // This processor will always fail when trying to get the path for a level.bld since this processor thinks it's a directory when it's not
+                    panic!("Failed to find case insensitive path: {}", e)
+                }
             },
             Ok(None) => todo!()
         }
