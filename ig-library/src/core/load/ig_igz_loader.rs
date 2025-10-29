@@ -4,7 +4,7 @@ use crate::core::ig_external_ref::{igExternalReferenceSystem, igReferenceResolve
 use crate::core::ig_file_context::igFileContext;
 use crate::core::ig_fs::Endian;
 use crate::core::ig_fs::Endian::{Big, Little};
-use crate::core::ig_handle::{igHandle, igHandleName};
+use crate::core::ig_handle::{igHandle, igHandleName, igObjectHandleManager};
 use crate::core::ig_memory::igMemoryPool;
 use crate::core::ig_objects::{igObject, igObjectDirectory, igObjectStreamManager};
 use crate::core::ig_registry::igRegistry;
@@ -65,6 +65,7 @@ impl Fixup {
         ig_registry: &igRegistry,
         ig_object_stream_manager: &mut igObjectStreamManager,
         ig_ext_ref_system: &mut igExternalReferenceSystem,
+        ig_handle_manager: &mut igObjectHandleManager,
         ctx: &mut IgzLoaderContext,
     ) {
         match self {
@@ -83,6 +84,7 @@ impl Fixup {
                             ig_registry,
                             imm,
                             ig_ext_ref_system,
+                            ig_handle_manager,
                             path.clone(),
                             name,
                         ) {
@@ -166,41 +168,8 @@ impl Fixup {
                             }
                         }
                     } else {
-                        let trial = [
-                            "tfbScript",
-                            "other",
-                            "global",
-                            "tfb",
-                            "system",
-                            "game",
-                            "interface",
-                            "client",
-                            "custom",
-                            "app",
-                            "application",
-                            "internal",
-                        ];
-                        for x in trial {
-                            let normal = hash(x);
-                            let lower = hash_lower(x);
-
-                            if normal == dependency_name.namespace.hash {
-                                info!(
-                                    "We got a normal match {} == {}",
-                                    dependency_name.namespace.hash, x
-                                )
-                            }
-
-                            if lower == dependency_name.namespace.hash {
-                                info!(
-                                    "We got a lower match {} == {}",
-                                    dependency_name.namespace.hash,
-                                    x.to_lowercase()
-                                )
-                            }
-                        }
-
-                        error!("EXID Fixup load failed: Failed to find namespace {:#01}, referenced in {}. This WILL cause issues.", dependency_name.namespace.hash, dir.path);
+                        error!("EXID Fixup load failed: Failed to find namespace {:#01}, referenced in {}", dependency_name.namespace.hash, dir.path);
+                        ctx.external_list.push(ig_handle_manager.lookup_handle_name(&dependency_name))
                     }
                 }
             }
@@ -521,6 +490,7 @@ impl igObjectLoader for igIGZObjectLoader {
         ig_registry: &igRegistry,
         ig_object_stream_manager: &mut igObjectStreamManager,
         ig_ext_ref_system: &mut igExternalReferenceSystem,
+        ig_object_handle_manager: &mut igObjectHandleManager,
         ig_metadata_manager: &mut igMetadataManager,
         dir: &mut igObjectDirectory,
         file_path: &str,
@@ -530,6 +500,7 @@ impl igObjectLoader for igIGZObjectLoader {
             ig_registry,
             ig_object_stream_manager,
             ig_ext_ref_system,
+            ig_object_handle_manager,
             ig_metadata_manager,
             dir,
             file_path,
@@ -633,6 +604,7 @@ impl igIGZLoader {
         ig_registry: &igRegistry,
         ig_object_stream_manager: &mut igObjectStreamManager,
         ig_ext_ref_system: &mut igExternalReferenceSystem,
+        ig_object_handle_manager: &mut igObjectHandleManager,
         imm: &mut igMetadataManager,
         dir: &mut igObjectDirectory,
         file_path: &str,
@@ -640,10 +612,9 @@ impl igIGZLoader {
     ) {
         let mut fd = ig_file_context.open(ig_registry, file_path, 0);
         if let Some(mut handle) = fd._handle {
-            // if file_path == "packages/generated/packagexmls/permanent_pkg.igz" {
+            // if file_path == "packages/generated/shaders/shaders_cafe_pkg.igz" {
             //     use std::io::Read;
             //     use byteorder::WriteBytesExt;
-            //     let old_pos = handle.position();
             //     let mut file = std::fs::File::create("file.igz").unwrap();
             //     for byte in handle.bytes() {
             //         file.write_u8(byte.unwrap()).unwrap();
@@ -707,6 +678,7 @@ impl igIGZLoader {
                     ig_registry,
                     ig_object_stream_manager,
                     ig_ext_ref_system,
+                    ig_object_handle_manager,
                     imm,
                     dir,
                 );
@@ -719,6 +691,7 @@ impl igIGZLoader {
                     ig_registry,
                     ig_object_stream_manager,
                     ig_ext_ref_system,
+                    ig_object_handle_manager,
                     imm,
                     dir,
                 );
@@ -760,6 +733,9 @@ impl igIGZLoader {
                 .seek(SeekFrom::Start((get_attribute_location(shared_state.version) + mem_pool_name_ptr) as u64))
                 .unwrap();
             let memory_pool_name = read_string(handle).unwrap();
+            if memory_pool_name.is_empty() {
+                println!("cooked");
+            }
             if i > 0 {
                 shared_state.loaded_pools[(i - 1) as usize] =
                     igMemoryPool::from_str(&memory_pool_name).unwrap_or_else(|_| {
@@ -781,6 +757,7 @@ impl igIGZLoader {
         ig_registry: &igRegistry,
         ig_object_stream_manager: &mut igObjectStreamManager,
         ig_ext_ref_system: &mut igExternalReferenceSystem,
+        ig_object_handle_manager: &mut igObjectHandleManager,
         imm: &mut igMetadataManager,
         dir: &mut igObjectDirectory,
     ) {
@@ -812,6 +789,7 @@ impl igIGZLoader {
                     ig_registry,
                     ig_object_stream_manager,
                     ig_ext_ref_system,
+                    ig_object_handle_manager,
                     shared_state,
                 );
             } else {
@@ -833,6 +811,7 @@ impl igIGZLoader {
         ig_registry: &igRegistry,
         ig_object_stream_manager: &mut igObjectStreamManager,
         ig_ext_ref_system: &mut igExternalReferenceSystem,
+        ig_object_handle_manager: &mut igObjectHandleManager,
         imm: &mut igMetadataManager,
         dir: &mut igObjectDirectory,
     ) {
@@ -869,6 +848,7 @@ impl igIGZLoader {
                     ig_registry,
                     ig_object_stream_manager,
                     ig_ext_ref_system,
+                    ig_object_handle_manager,
                     shared_state,
                 );
             } else {
@@ -901,15 +881,15 @@ impl igIGZLoader {
 fn get_chunk_descriptor_start(version: u32) -> u64 {
     match version {
         0x05 | 0x06 => 0xC,
-        0x09 => 0x14,
+        0x07 | 0x08 | 0x09 => 0x14,
         _ => todo!("Unsupported igz version {}", version)
     }
 }
 
 fn get_attribute_location(version: u32) -> u32 {
     match version {
-        0x05 | 0x06 => 0x56C,
-        0x09 => 0x224,
+        0x05 | 0x06 | 0x07 => 0x56C,
+        0x08 | 0x09 => 0x224, // FIXME: this could be wrong...
         _ => todo!("Unsupported igz version {}", version)
     }
 }

@@ -59,7 +59,7 @@ impl igMetaField for igObjectRefMetaField {
             };
         }
         if raw != 0 {
-            // value should not be null, but we couldn't determine what it actually was.
+            // the value should not be null, but we couldn't determine what it actually was.
             error!("Failed to read igObjectRefMetaField properly");
             panic!("Alchemy Error! Check the logs.");
         }

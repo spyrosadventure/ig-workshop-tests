@@ -113,6 +113,7 @@ impl VVLaboratoryEditor {
         let ig_object_stream_manager=  &mut game.ig_alchemy.object_stream_manager;
         let imm=  &mut game.ig_alchemy.ark_core.metadata_manager;
         let ig_ext_ref_system=  &mut game.ig_alchemy.ig_ext_ref_system;
+        let ig_object_handle_manager=  &mut game.ig_alchemy.ig_object_handle_manager;
 
         for (name, package) in &mut loaded_packages {
             let pkg_dir = ig_object_stream_manager
@@ -121,6 +122,7 @@ impl VVLaboratoryEditor {
                     ig_registry,
                     imm,
                     ig_ext_ref_system,
+                    ig_object_handle_manager,
                     format!("packages/generated/{}_pkg.igz", name),
                 )
                 .unwrap();
@@ -143,6 +145,7 @@ impl VVLaboratoryEditor {
                                 ig_registry,
                                 imm,
                                 ig_ext_ref_system,
+                                ig_object_handle_manager,
                                 file_name.to_string(),
                             )
                             .unwrap();
@@ -159,6 +162,7 @@ impl VVLaboratoryEditor {
                         //             ig_registry,
                         //             imm,
                         //             ig_ext_ref_system,
+                        //             ig_object_handle_manager,
                         //             file_name.to_string(),
                         //         )
                         //         .unwrap();

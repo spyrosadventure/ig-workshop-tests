@@ -3,10 +3,11 @@ use crate::core::ig_archive_manager::igArchiveManager;
 use crate::core::ig_archive_mount_manager::igArchiveMountManager;
 use crate::core::ig_file_context::WorkItemBuffer::Invalid;
 use crate::core::ig_fs::{igFileDescriptor, igFileWorkItemProcessor, Endian};
-use crate::core::ig_registry::igRegistry;
+use crate::core::ig_registry::{igRegistry, BuildTool};
 use crate::core::ig_std_lib_storage_device::igStdLibStorageDevice;
-use log::{debug, error, warn};
+use log::{debug, error, warn, Metadata};
 use phf::phf_map;
+use std::fs::metadata;
 use std::path::Path;
 use std::sync::{Arc, Mutex, RwLock};
 
@@ -165,7 +166,7 @@ impl igFileContext {
         igArchiveManager::load_archive(self.archive_manager.clone(), self, ig_registry, path)
     }
 
-    pub fn new(game_path: String) -> Self {
+    pub fn new(game_path: String, update_folder: Option<&str>) -> Self {
         let _root = game_path
             .trim_end_matches("\\")
             .trim_end_matches("/")
@@ -177,6 +178,11 @@ impl igFileContext {
         {
             // Drop the lock as soon as possible
             let mut stack_lock = processor_stack.lock().unwrap();
+            if let Some(update_dir) = update_folder {
+                stack_lock
+                    .set_next_processor(igStdLibStorageDevice::new_tfb_update_provider(update_dir));
+                // Only used on TFB Update folders and will not be present if no update is loaded
+            }
             stack_lock.set_next_processor(archive_manager.clone());
             stack_lock.set_next_processor(igStdLibStorageDevice::new());
         }
@@ -189,18 +195,25 @@ impl igFileContext {
     }
 
     pub fn initialize_update(&self, ig_registry: &igRegistry, update_path: String) {
-        let load_update_result = igArchive::open(self, ig_registry, &update_path);
-        if let Ok(update_pak) = load_update_result {
-            if let Ok(archive_manager) = self.archive_manager.write() {
-                archive_manager._patch_archives.push(Arc::new(update_pak));
+        if let Ok(metadata) = metadata(&update_path) {
+            if metadata.is_file() {
+                let load_update_result = igArchive::open(self, ig_registry, &update_path);
+                if let Ok(update_pak) = load_update_result {
+                    if let Ok(archive_manager) = self.archive_manager.write() {
+                        archive_manager._patch_archives.push(Arc::new(update_pak));
+                    }
+                } else {
+                    error!(
+                        "Failed to load update.pak: {}",
+                        load_update_result.err().unwrap()
+                    )
+                }
             }
-        } else {
-            error!(
-                "Failed to load update.pak: {}",
-                load_update_result.err().unwrap()
-            )
         }
     }
+
+    /// Sets the target folder to use for updates. TFB games will use an update folder which needs to be checked BEFORE the main folder
+    pub fn set_update_folder(&mut self, path: &str) {}
 }
 
 /// Takes an alchemy path and converts it to a path that is usable by ig-workshop

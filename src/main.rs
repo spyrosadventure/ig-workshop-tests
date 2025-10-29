@@ -1,9 +1,9 @@
 // TODO: on release tie this behind its own run config #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod logger;
+mod plugin;
 mod tabs;
 mod window;
-mod plugin;
 
 use crate::logger::init_logger;
 use crate::tabs::laboratory_editor::VVLaboratoryEditor;
@@ -24,7 +24,7 @@ use sonic_rs::writer::BufferedWriter;
 use sonic_rs::{Array, JsonContainerTrait, JsonValueTrait, Object, Value};
 use std::collections::VecDeque;
 use std::fs;
-use std::fs::File;
+use std::fs::{File, metadata};
 use std::io::Cursor;
 use std::ops::Sub;
 use std::string::ToString;
@@ -68,7 +68,14 @@ pub fn load_game_data(
         .spawn(move || {
             let start_time = Instant::now();
 
-            let ig_file_context = igFileContext::new(game_cfg.clone()._path);
+            let mut game_update_dir = None;
+            if let Ok(metadata) = metadata(&game_cfg._update_path) {
+                if metadata.is_dir() {
+                    game_update_dir = Some(game_cfg._update_path.as_str());
+                }
+            }
+
+            let ig_file_context = igFileContext::new(game_cfg.clone()._path, game_update_dir);
             let ig_registry = igRegistry::new(game_cfg.clone()._platform);
 
             if !game_cfg._update_path.is_empty() {

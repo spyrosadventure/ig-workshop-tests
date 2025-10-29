@@ -170,7 +170,7 @@ impl WorkshopTabImpl for ConfigurationTab {
                     });
 
 
-                    if ui.button("delete game config").clicked() {
+                    if ui.button("Delete Game Config").clicked() {
                         game_cfg_to_remove = Some(game_idx)
                     }
                 });

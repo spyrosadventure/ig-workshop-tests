@@ -24,6 +24,14 @@ impl igStdLibStorageDevice {
             next_processor: None,
         }))
     }
+
+    pub fn new_tfb_update_provider(update_folder: &str) -> Arc<RwLock<Self>> {
+        Arc::new(RwLock::new(Self {
+            _path: update_folder.to_string(),
+            _name: "TFB Update Provider".to_string(),
+            next_processor: None,
+        }))
+    }
 }
 
 impl igStdLibStorageDevice {
@@ -82,30 +90,32 @@ impl igStorageDevice for igStdLibStorageDevice {
     fn open(&self, this: Arc<Mutex<dyn igFileWorkItemProcessor>>, work_item: &mut igFileWorkItem) {
         let path_buf = PathBuf::from(&self.get_combined_path(work_item));
 
-        if let Ok(Some(path)) = find_case_insensitive_path(path_buf) {
-            let result = File::open(path);
-            if result.is_ok() {
-                let mut buffer = Vec::new();
-                result.unwrap().read_to_end(&mut buffer).unwrap();
+        match find_case_insensitive_path(path_buf) {
+            Ok(Some(path)) => {
+                let result = File::open(path);
+                if result.is_ok() {
+                    let mut buffer = Vec::new();
+                    result.unwrap().read_to_end(&mut buffer).unwrap();
 
-                work_item._file._device = Some(this);
-                work_item._file._handle = Some(Cursor::new(buffer));
-                work_item._status = kStatusComplete;
-            } else {
-                let error = result.err().unwrap();
-                match error.kind() {
-                    ErrorKind::NotFound => {
-                        work_item._status = kStatusInvalidPath;
-                    }
-                    _ => {
-                        work_item._status = kStatusGeneralError;
+                    work_item._file._device = Some(this);
+                    work_item._file._handle = Some(Cursor::new(buffer));
+                    work_item._status = kStatusComplete;
+                } else {
+                    let error = result.err().unwrap();
+                    match error.kind() {
+                        ErrorKind::NotFound => {
+                            work_item._status = kStatusInvalidPath;
+                        }
+                        _ => {
+                            work_item._status = kStatusGeneralError;
+                        }
                     }
                 }
             }
-        } else {
-            // If this comes up later on, without this there is little to no hope of debugging.
-            work_item._status = kStatusGeneralError;
-            error!("General work item error in ig_std_lib_storage_device.rs: open")
+            Err(e) => {
+                panic!("Failed to find case insensitive path: {}", e)
+            },
+            Ok(None) => todo!()
         }
     }
 
@@ -262,7 +272,12 @@ impl igFileWorkItemProcessor for igStdLibStorageDevice {
         this: Arc<Mutex<dyn igFileWorkItemProcessor>>,
         work_item: &mut igFileWorkItem,
     ) {
-        igStorageDevice::process(self, this, work_item);
+        igStorageDevice::process(self, this.clone(), work_item);
+        if work_item._status == kStatusComplete {
+            return;
+        }
+
+        self.send_to_next_processor(this, work_item);
     }
 
     fn set_next_processor(&mut self, new_processor: Arc<RwLock<dyn igFileWorkItemProcessor>>) {

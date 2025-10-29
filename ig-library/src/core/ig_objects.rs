@@ -1,7 +1,7 @@
 use crate::core::ig_custom::{igNameList, igObjectDirectoryList, igObjectList};
 use crate::core::ig_external_ref::igExternalReferenceSystem;
 use crate::core::ig_file_context::{get_native_path, igFileContext};
-use crate::core::ig_registry::igRegistry;
+use crate::core::ig_registry::{igRegistry, BuildTool};
 use crate::core::load::ig_igz_loader::igIGZObjectLoader;
 use crate::core::load::ig_loader;
 use crate::core::load::ig_loader::igObjectLoader;
@@ -13,6 +13,7 @@ use std::any::{Any, TypeId};
 use std::collections::HashMap;
 use std::mem;
 use std::sync::{Arc, RwLock};
+use crate::core::ig_handle::igObjectHandleManager;
 
 /// Has no relation to anything in VV Alchemy and is solely an ig-library idea only. Can represent a igObject or a more primitive type such as [u8], [u16], [u32], [i8], [i16], [i32], [Arc<str>], etc
 pub type igAny = Arc<RwLock<dyn Any + Send + Sync>>;
@@ -100,6 +101,7 @@ impl igObjectStreamManager {
         ig_registry: &igRegistry,
         ig_metadata_manager: &mut igMetadataManager,
         ig_ext_ref_system: &mut igExternalReferenceSystem,
+        ig_object_handle_manager: &mut igObjectHandleManager,
         path: String,
     ) -> Result<Arc<RwLock<igObjectDirectory>>, String> {
         self.load_with_namespace(
@@ -107,6 +109,7 @@ impl igObjectStreamManager {
             ig_registry,
             ig_metadata_manager,
             ig_ext_ref_system,
+            ig_object_handle_manager,
             path.clone(),
             igName::new(path),
         )
@@ -118,6 +121,7 @@ impl igObjectStreamManager {
         ig_registry: &igRegistry,
         ig_metadata_manager: &mut igMetadataManager,
         ig_ext_ref_system: &mut igExternalReferenceSystem,
+        ig_object_handle_manager: &mut igObjectHandleManager,
         path: String,
         namespace: igName,
     ) -> Result<Arc<RwLock<igObjectDirectory>>, String> {
@@ -138,6 +142,7 @@ impl igObjectStreamManager {
                     ig_registry,
                     self,
                     ig_ext_ref_system,
+                    ig_object_handle_manager,
                     ig_metadata_manager,
                     &mut dir_guard,
                     &file_path,

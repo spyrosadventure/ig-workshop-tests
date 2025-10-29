@@ -18,6 +18,7 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use strum::IntoEnumIterator;
 use crate::core::ig_custom::{igDataList, igStringRefList};
+use crate::core::ig_handle::igObjectHandleManager;
 
 pub trait CResourcePreCacher: Send + Sync {
     fn precache(
@@ -636,6 +637,7 @@ impl CPrecacheManager {
         ig_file_context: &mut igFileContext,
         ig_object_stream_manager: &mut igObjectStreamManager,
         ig_ext_ref_system: &mut igExternalReferenceSystem,
+        ig_object_handle_manager: &mut igObjectHandleManager,
         ig_metadata_manager: &mut igMetadataManager,
         package_name: String,
         pool_id: EMemoryPoolID,
@@ -673,6 +675,7 @@ impl CPrecacheManager {
                         ig_registry,
                         ig_metadata_manager,
                         ig_ext_ref_system,
+                        ig_object_handle_manager,
                         package_path.clone(),
                     )
                     .unwrap();
@@ -715,6 +718,7 @@ impl CPrecacheManager {
                         ig_registry,
                         ig_metadata_manager,
                         ig_ext_ref_system,
+                        ig_object_handle_manager,
                         format!("{}/level.bld", package_name),
                     )
                     .unwrap();
@@ -803,6 +807,7 @@ pub fn load_init_script(game: EGame, is_weakly_loaded: bool, ig_alchemy: &mut ig
                 &mut ig_alchemy.registry,
                 &mut ig_alchemy.object_stream_manager,
                 &mut ig_alchemy.ig_ext_ref_system,
+                &mut ig_alchemy.ig_object_handle_manager,
                 &mut ig_alchemy.ark_core.metadata_manager,
                 task.clone(),
                 path.unwrap(),
@@ -874,6 +879,7 @@ fn process_task(
     ig_registry: &mut igRegistry,
     ig_object_stream_manager: &mut igObjectStreamManager,
     ig_ext_ref_system: &mut igExternalReferenceSystem,
+    ig_object_handle_manager: &mut igObjectHandleManager,
     ig_metadata_manager: &mut igMetadataManager,
     task: LoaderTask,
     line: String,
@@ -893,6 +899,7 @@ fn process_task(
                 ig_file_context,
                 ig_object_stream_manager,
                 ig_ext_ref_system,
+                ig_object_handle_manager,
                 ig_metadata_manager,
                 line,
                 EMemoryPoolID::MP_DEFAULT,

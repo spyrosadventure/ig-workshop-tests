@@ -6,6 +6,7 @@ use crate::core::meta::ig_metadata_manager::igMetadataManager;
 use once_cell::sync::Lazy;
 use std::sync::{Arc, RwLock};
 use crate::core::ig_external_ref::igExternalReferenceSystem;
+use crate::core::ig_handle::igObjectHandleManager;
 
 static LOADERS: Lazy<[Arc<RwLock<dyn igObjectLoader>>; 1]> =
     Lazy::new(|| [Arc::new(RwLock::new(igIGZObjectLoader))]);
@@ -27,6 +28,7 @@ pub trait igObjectLoader: Send + Sync {
         ig_registry: &igRegistry,
         ig_object_stream_manager: &mut igObjectStreamManager,
         ig_ext_ref_system: &mut igExternalReferenceSystem,
+        ig_object_handle_manager: &mut igObjectHandleManager,
         ig_metadata_manager: &mut igMetadataManager,
         dir: &mut igObjectDirectory,
         file_path: &str,

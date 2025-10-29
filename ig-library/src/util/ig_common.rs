@@ -4,6 +4,7 @@ use crate::core::ig_ark_core::igArkCore;
 use crate::core::ig_core_platform::IG_CORE_PLATFORM;
 use crate::core::ig_core_platform::IG_CORE_PLATFORM::*;
 use crate::core::ig_file_context::igFileContext;
+use crate::core::ig_handle::igObjectHandleManager;
 use crate::core::ig_objects::igObjectStreamManager;
 use crate::core::ig_registry::igRegistry;
 
@@ -17,6 +18,7 @@ pub struct igAlchemy {
     pub registry: igRegistry,
     pub object_stream_manager: igObjectStreamManager,
     pub ig_ext_ref_system: igExternalReferenceSystem,
+    pub ig_object_handle_manager: igObjectHandleManager,
     pub client: CClient,
 }
 
@@ -27,6 +29,7 @@ impl igAlchemy {
             file_context: ig_file_context,
             object_stream_manager: igObjectStreamManager::new(),
             ig_ext_ref_system: igExternalReferenceSystem::new(),
+            ig_object_handle_manager: igObjectHandleManager::new(),
             client: CClient::init(&ig_registry),
             registry: ig_registry,
         }

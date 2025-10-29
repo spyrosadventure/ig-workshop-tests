@@ -17,7 +17,7 @@ use std::time::Instant;
 
 fn load_alchemy() -> igAlchemy {
     let start_time = Instant::now();
-    let ig_file_context = igFileContext::new("".to_string());
+    let ig_file_context = igFileContext::new("".to_string(), None);
     let ig_registry = igRegistry::new(IG_CORE_PLATFORM::IG_CORE_PLATFORM_CAFE);
     let ig_alchemy = igAlchemy::new(
         ig_file_context,
